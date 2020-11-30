@@ -5,8 +5,4 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-
-logging:
-  level:
-    - LukaszSz90.simpleapp: debug
-    - sql: debug
+    show-sql: true
