@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data @NoArgsConstructor @AllArgsConstructor
 @Builder
 @ToString(exclude = "user")
-@EqualsAndHashCode(of = )
+@EqualsAndHashCode(of = "userId")
 public class UserDetails {
 
     @Id
@@ -22,7 +22,8 @@ public class UserDetails {
     private LocalDate birthDate;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
-    @Column(insertable = false,updatable = false)
+    @Column(insertable = false,updatable = false, name = "user_id")
     private Long userId;
 }
