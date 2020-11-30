@@ -1,5 +1,6 @@
 package LukaszSz90.simpleapp.web.controller;
 
+import LukaszSz90.simpleapp.exception.UserAlreadyExistException;
 import LukaszSz90.simpleapp.service.UserService;
 import LukaszSz90.simpleapp.web.command.RegisterUserCommand;
 import antlr.ASTFactory;
@@ -38,9 +39,21 @@ public class RegistrationController {
             return "register/form";
         }
 
-        Long id = userService.create(registerUserCommand);
-        log.debug("Utworzono użytkownika o id = {}", id);
+        try {
+            Long id = userService.create(registerUserCommand);
+            log.debug("Utworzono użytkownika o id = {}", id);
 
-        return "redirect:/login";
+            return "redirect:/login";
+        }
+        catch (UserAlreadyExistException uaee){
+            bindingResult.rejectValue("username", null, "Użytkownik o podanej nazwie już istnieje");
+            return "register/form";
+        }
+        catch (RuntimeException re) {
+            bindingResult.rejectValue(null, null, "Wystąpił błąd");
+            return "register/form";
+        }
     }
+
+
 }

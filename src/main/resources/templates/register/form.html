@@ -26,6 +26,7 @@
                 <div>
                     <button type="submit">Zarejestruj</button>
                 </div>
+                <div th:if="${#fields.hasErrors()}" th:value="${#fields.errors}"></div>
             </fieldset>
         </form>
     </div>

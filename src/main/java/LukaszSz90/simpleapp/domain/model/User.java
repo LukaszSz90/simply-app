@@ -3,6 +3,7 @@ package LukaszSz90.simpleapp.domain.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
@@ -10,8 +11,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = "username") @ToString(exclude = "password")
-public class User {
+@EqualsAndHashCode(of = "username") @ToString(exclude = {"password","details"})
+public class User implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,4 +38,7 @@ public class User {
     )
     @Column(name = "role")
     private Set<String> roles;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserDetails details;
 }
