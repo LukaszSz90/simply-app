@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: simpleapp
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+logging:
+  level:
+    - LukaszSz90.simpleapp: debug
+    - sql: debug
