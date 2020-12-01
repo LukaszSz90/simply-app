@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -30,6 +31,11 @@ public class UserProfileController {
         return "user/profile";
     }
 
+    @ModelAttribute("userSummary")
+    public UserSummary userSummary() {
+        return userService.getCurrentUserSummary();
+    }
+
     private EditUserCommand createEditCommander(UserSummary summary) {
         return EditUserCommand.builder()
                 .firstName(summary.getFirstName())
@@ -40,6 +46,23 @@ public class UserProfileController {
 
     @PostMapping("/edit")
     public String editUserProfile(@Valid EditUserCommand editUserCommand, BindingResult bindings) {
+        log.debug("Dane do edycji użytkownika: {}", editUserCommand);
+        if(bindings.hasErrors()) {
+            log.debug("Błedne dane: {}", bindings.getAllErrors());
+            return "/user/profile";
+        }
+
+        try {
+            boolean succes = userService.edit(editUserCommand);
+            log.debug("udana edycja danych: {}", succes);
+            return "redirect:/profile";
+        }
+        catch (RuntimeException re) {
+            log.warn(re.getLocalizedMessage());
+            log.debug("Bład przy edycji danych",re);
+            bindings.rejectValue(null, null, "Wystąpił bład");
+        }
+
         return "redirect:/profile";
     }
 }
