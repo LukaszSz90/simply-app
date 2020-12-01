@@ -1,21 +1,26 @@
 package LukaszSz90.simpleapp.service;
 
 import LukaszSz90.simpleapp.converter.UserConverter;
+import LukaszSz90.simpleapp.data.user.UserSummary;
 import LukaszSz90.simpleapp.domain.model.User;
+import LukaszSz90.simpleapp.domain.model.UserDetails;
 import LukaszSz90.simpleapp.domain.repository.UserRepository;
 import LukaszSz90.simpleapp.exception.UserAlreadyExistException;
 import LukaszSz90.simpleapp.web.command.RegisterUserCommand;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-@Service @Transactional
-@Slf4j @RequiredArgsConstructor
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserConverter userConverter;
@@ -27,7 +32,7 @@ public class UserService {
 
         User userToCreate = userConverter.from(registerUserCommand);
         log.debug("uzyskany obiekt użytkownika do zapisu: {}", userToCreate);
-        if(userRepository.existsByUsername(userToCreate.getUsername())) {
+        if (userRepository.existsByUsername(userToCreate.getUsername())) {
             log.debug("Próba rejestracji na istniejącego uzytkownika");
             throw new UserAlreadyExistException(String.format("Użytkownik %s już istnieje", userToCreate.getUsername()));
         }
@@ -35,11 +40,25 @@ public class UserService {
         userToCreate.setActive(Boolean.TRUE);
         userToCreate.setRoles(Set.of("ROLE_USER"));
         userToCreate.setPassword(passwordEncoder.encode(userToCreate.getPassword()));
+        userToCreate.setDetails(UserDetails.builder()
+                .user(userToCreate)
+                .build());
         userRepository.save(userToCreate);
         log.debug("Zapisany użytkownik: {}", userToCreate);
 
         return userToCreate.getId();
     }
 
+    @Transactional
+    public UserSummary getCurrentUserSummary() {
+        log.debug("Pobieranie danych użytkownika aktualnie zalogowanego");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        User user = userRepository.getAuthenticatedUser(username);
+        UserSummary summary = userConverter.toUserSummary(user);
+
+        log.debug("Podsumowanie danych użytkownika: {}", summary);
+
+        return summary;
+    }
 }
