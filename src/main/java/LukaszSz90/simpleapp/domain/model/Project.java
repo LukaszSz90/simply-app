@@ -1,8 +1,21 @@
 package LukaszSz90.simpleapp.domain.model;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
+@Table(
+        name = "projects",
+        uniqueConstraints = @UniqueConstraint(
+                name = "projects_name_user_id_idx",
+                columnNames = {"name","user_id"}
+        )
+)
+@Data
+@AllArgsConstructor @NoArgsConstructor
+@Builder
+@EqualsAndHashCode(of = "id") @ToString(exclude = "user")
 public class Project {
 
     @Id
@@ -11,10 +24,10 @@ public class Project {
 
     @Column(nullable = false)
     private String name;
-    @Column()
     private String url;
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }
