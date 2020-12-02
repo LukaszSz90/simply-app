@@ -5,4 +5,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+  datasource:
+    url: jdbc:h2:mem:simpleappDB
+
+logging:
+  level:
+    root: INFO
+    sql: DEBUG
+    LukaszSz90.simpleapp: DEBUG
+
