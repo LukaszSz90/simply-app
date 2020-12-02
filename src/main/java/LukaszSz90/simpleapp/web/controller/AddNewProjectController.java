@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AddNewProjectController {
 
-    @GetMapping
+    @GetMapping("/add")
     public String getAddProjectPage(Model model) {
         model.addAttribute(new CreateProjectCommand());
         return "project/add";
